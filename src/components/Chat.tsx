@@ -42,8 +42,14 @@ export function Chat() {
       <RegisterAiTool
         name="edit-cells"
         tool={defineAiTool()({
-          description:
-            "Edit multiple cells in the spreadsheet. Use an empty string to clear a cell.",
+          description: `Edit multiple cells in the spreadsheet. Replace contents by submitting a string with text. 
+- To create an empty cell, submit an emptry string.
+- You can add simple formulae, with + - * /.
+  - FORMALUAE ONLY in this format:
+    - "=A1+B1"
+    - '=B6*F6-D2"
+- You can NOT use SUM, PRODUCT, :, etc
+`,
           parameters: {
             type: "object",
             properties: {
@@ -64,15 +70,6 @@ export function Chat() {
             required: ["cells"],
             additionalProperties: false,
           },
-          // execute: async ({ cells }) => {
-          //   console.log("executing", cells);
-          //   cells?.forEach(
-          //     (cell: { rowId: string; columnId: string; value: string }) => {
-          //       setCellValue(cell.columnId, cell.rowId, cell.value);
-          //       console.log("setting", cell);
-          //     }
-          //   );
-          // },
           render: RenderEditCellsTool,
         })}
       />
@@ -117,7 +114,7 @@ function RenderEditCellsTool({
 >) {
   const spreadsheet = useSpreadsheet();
   if (!spreadsheet) return null;
-  const { setCellValue, selectCell } = spreadsheet;
+  const { setCellValue } = spreadsheet;
 
   if (stage === "receiving") {
     if (
@@ -128,19 +125,14 @@ function RenderEditCellsTool({
       return;
     }
 
-    const current = partialArgs.cells[partialArgs.cells.length - 1] as
-      | {
-          rowId: string;
-          columnId: string;
-          value: string;
+    (partialArgs as any).cells.forEach(
+      (cell: { rowId: string; columnId: string; value: string }) => {
+        if (cell.rowId && cell.columnId && typeof cell.value === "string") {
+          setTimeout(() => setCellValue(cell.columnId, cell.rowId, cell.value));
+          console.log("setting", cell);
         }
-      | undefined;
-
-    if (current) {
-      setTimeout(() => {
-        setCellValue(current.columnId, current.rowId, current.value);
-      });
-    }
+      }
+    );
 
     return <AiTool title="Editing cells…" variant="minimal" />;
   }

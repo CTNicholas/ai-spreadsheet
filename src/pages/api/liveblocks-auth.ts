@@ -15,7 +15,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   // We're generating random users and avatars here.
   // In a real-world scenario, this is where you'd assign the
   // user based on their real identity from your auth provider.
-  const userIndex = Math.floor(Math.random() * NAMES.length);
+  const userIndex = Math.floor(1);
 
   // Create a session for the current user (access token auth)
   const session = liveblocks.prepareSession(`user-${userIndex}`, {
