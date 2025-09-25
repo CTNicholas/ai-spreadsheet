@@ -328,7 +328,7 @@ export function DisplayCell({
     highlightOpacity.set(1);
     highlightAnimationControls.current = animate(highlightOpacity, 0, {
       ease: "easeOut",
-      duration: 0.6,
+      duration: 1.2,
     });
   }, [value, highlightOpacity]);
 

@@ -224,15 +224,25 @@
 }
 
 .value_content {
-  position: relative;
+  /* position: relative; */
   display: inline-block;
 }
 
 .value_content::before {
   --display-highlight-height: calc(1em + 6px);
 
+  content: "";
   position: absolute;
+  inset: 0px;
+  display: block;
   z-index: -1;
+  border-radius: 0 !important;
+  /* box-shadow: 0 0 0 2px red; */
+  /* border: 2px solid red; */
+  /* z-index: 10000; */
+  background: rgb(89, 222, 153);
+  opacity: var(--display-highlight-opacity, 0);
+  /* z-index: -1;
   top: calc(50% - var(--display-highlight-height) / 2);
   right: -4px;
   left: -4px;
@@ -242,7 +252,7 @@
   content: "";
   opacity: var(--display-highlight-opacity, 0);
   pointer-events: none;
-  will-change: opacity;
+  will-change: opacity; */
 }
 
 .cell:global(.selected) {
