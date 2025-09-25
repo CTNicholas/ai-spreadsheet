@@ -41,6 +41,40 @@ export function Chat() {
       />
 
       <RegisterAiTool
+        name="get-weather"
+        tool={defineAiTool()({
+          description: `Get the weather`,
+          parameters: {
+            type: "object",
+            properties: {},
+            required: [],
+            additionalProperties: false,
+          },
+          execute: async ({}) => {
+            const URL = `https://api.open-meteo.com/v1/forecast?
+              latitude=54.776
+              &longitude=-1.573
+              &daily=temperature_2m_max,temperature_2m_min,precipitation_sum
+              &timezone=auto
+            `.replace(/\s/g, "");
+
+            const response = await fetch(URL);
+            const data = await response.json();
+            console.log(data);
+
+            return {
+              data: data,
+              description: "Weather fetched",
+            };
+          },
+          render: ({ stage }) =>
+            stage !== "executed" ? (
+              <AiTool title="Fetching weather…" variant="minimal" />
+            ) : null,
+        })}
+      />
+
+      <RegisterAiTool
         name="edit-cells"
         tool={defineAiTool()({
           description: `Edit multiple cells in the spreadsheet. Replace contents by submitting a string with text. 
