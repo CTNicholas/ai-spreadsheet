@@ -225,7 +225,7 @@ export async function getStaticProps() {
  * This function is used when deploying an example on liveblocks.io.
  * You can ignore it completely if you run the example locally.
  */
-function useExampleRoomId(roomId: string) {
+export function useExampleRoomId(roomId: string) {
   const { query } = useRouter();
   const exampleRoomId = useMemo(() => {
     return query?.exampleId ? `${roomId}-${query.exampleId}` : roomId;
