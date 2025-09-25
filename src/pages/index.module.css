@@ -1,3 +1,24 @@
+.wrapper {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.chat {
+  border-radius: calc(var(--radius) + var(--padding));
+  overflow: hidden;
+  width: 360px;
+  position: relative;
+  border: 1px solid var(--gray-200);
+}
+
+.chat > div {
+  position: absolute;
+  inset: 0;
+}
+
 .container {
   position: relative;
   display: flex;
@@ -7,6 +28,7 @@
   flex-direction: column;
   background: var(--gray-100);
   border-radius: calc(var(--radius) + var(--padding));
+  border: 1px solid var(--gray-200);
 }
 
 .banner {

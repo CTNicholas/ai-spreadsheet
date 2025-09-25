@@ -32,6 +32,9 @@ import { createInitialStorage } from "../spreadsheet/utils";
 import { appendUnit } from "../utils/appendUnit";
 import styles from "./index.module.css";
 
+import { Chat } from "../components/Chat";
+import { FixedArray } from "../types";
+
 const AVATARS_MAX = 3;
 
 function Example() {
@@ -55,7 +58,7 @@ function Example() {
 
   return (
     <main
-      className={styles.container}
+      className={styles.wrapper}
       style={
         {
           "--column-header-width": appendUnit(COLUMN_HEADER_WIDTH),
@@ -65,96 +68,122 @@ function Example() {
         } as CSSProperties
       }
     >
-      <div className={styles.banner}>
-        <div className={styles.banner_content}>
-          <div className={styles.buttons}>
-            <div className={styles.button_group} role="group">
-              <button
-                className={styles.button}
-                disabled={rows.length >= GRID_MAX_ROWS}
-                onClick={() => insertRow(rows.length, ROW_INITIAL_HEIGHT)}
-              >
-                <AddRowAfterIcon />
-                <span>Add Row</span>
-              </button>
-              <button
-                className={styles.button}
-                disabled={columns.length >= GRID_MAX_COLUMNS}
-                onClick={() =>
-                  insertColumn(columns.length, COLUMN_INITIAL_WIDTH)
-                }
-              >
-                <AddColumnAfterIcon />
-                <span>Add Column</span>
-              </button>
-            </div>
-            <div className={styles.button_group} role="group">
-              <Tooltip content="Undo">
+      <div className={styles.container}>
+        <div className={styles.banner}>
+          <div className={styles.banner_content}>
+            <div className={styles.buttons}>
+              <div className={styles.button_group} role="group">
                 <button
                   className={styles.button}
-                  onClick={() => history.undo()}
-                  disabled={!canUndo}
+                  disabled={rows.length >= GRID_MAX_ROWS}
+                  onClick={() => insertRow(rows.length, ROW_INITIAL_HEIGHT)}
                 >
-                  <UndoIcon />
+                  <AddRowAfterIcon />
+                  <span>Add Row</span>
                 </button>
-              </Tooltip>
-              <Tooltip content="Redo">
                 <button
                   className={styles.button}
-                  onClick={() => history.redo()}
-                  disabled={!canRedo}
+                  disabled={columns.length >= GRID_MAX_COLUMNS}
+                  onClick={() =>
+                    insertColumn(columns.length, COLUMN_INITIAL_WIDTH)
+                  }
                 >
-                  <RedoIcon />
+                  <AddColumnAfterIcon />
+                  <span>Add Column</span>
                 </button>
-              </Tooltip>
+              </div>
+              <div className={styles.button_group} role="group">
+                <Tooltip content="Undo">
+                  <button
+                    className={styles.button}
+                    onClick={() => history.undo()}
+                    disabled={!canUndo}
+                  >
+                    <UndoIcon />
+                  </button>
+                </Tooltip>
+                <Tooltip content="Redo">
+                  <button
+                    className={styles.button}
+                    onClick={() => history.redo()}
+                    disabled={!canRedo}
+                  >
+                    <RedoIcon />
+                  </button>
+                </Tooltip>
+              </div>
             </div>
-          </div>
-          <div className={styles.avatars}>
-            {self && (
-              <Avatar
-                className={styles.avatar}
-                color={self.info.color}
-                key="you"
-                name="You"
-                src={self.info.avatar}
-                tooltipOffset={6}
-              />
-            )}
-            {users.slice(0, AVATARS_MAX - 1).map(({ connectionId, info }) => {
-              return (
+            <div className={styles.avatars}>
+              {self && (
                 <Avatar
                   className={styles.avatar}
-                  color={info.color}
-                  key={connectionId}
-                  name={info.name}
-                  src={info.avatar}
+                  color={self.info.color}
+                  key="you"
+                  name="You"
+                  src={self.info.avatar}
                   tooltipOffset={6}
                 />
-              );
-            })}
-            {users.length > AVATARS_MAX - 1 ? (
-              <div className={cx(styles.avatar, styles.avatar_ellipsis)}>
-                +{users.length - AVATARS_MAX + 1}
-              </div>
-            ) : null}
+              )}
+              {users.slice(0, AVATARS_MAX - 1).map(({ connectionId, info }) => {
+                return (
+                  <Avatar
+                    className={styles.avatar}
+                    color={info.color}
+                    key={connectionId}
+                    name={info.name}
+                    src={info.avatar}
+                    tooltipOffset={6}
+                  />
+                );
+              })}
+              {users.length > AVATARS_MAX - 1 ? (
+                <div className={cx(styles.avatar, styles.avatar_ellipsis)}>
+                  +{users.length - AVATARS_MAX + 1}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
+        <Sheet {...spreadsheet} />
       </div>
-      <Sheet {...spreadsheet} />
+      <div className={styles.chat}>
+        <Chat />
+      </div>
     </main>
   );
 }
 
+// Create initial storage with dynamic grid based on constants
+const createInitialGrid = (): FixedArray<
+  FixedArray<string, typeof GRID_INITIAL_COLUMNS>,
+  typeof GRID_INITIAL_ROWS
+> => {
+  const grid = Array.from({ length: GRID_INITIAL_ROWS }, () =>
+    Array.from({ length: GRID_INITIAL_COLUMNS }, () => "")
+  ) as FixedArray<
+    FixedArray<string, typeof GRID_INITIAL_COLUMNS>,
+    typeof GRID_INITIAL_ROWS
+  >;
+
+  // Sample data
+  if (GRID_INITIAL_ROWS >= 6 && GRID_INITIAL_COLUMNS >= 6) {
+    grid[0][0] = "🔢 Entries";
+    grid[0][1] = "👀 Results";
+    grid[1][0] = "3";
+    grid[1][1] = "=A2*3";
+    grid[2][0] = "1234";
+    grid[2][1] = "=(A2*A3+A4)/2";
+    grid[3][0] = "-8";
+    grid[3][1] = "=B3%2";
+  }
+
+  return grid;
+};
+
 const initialStorage = createInitialStorage(
   { length: GRID_INITIAL_COLUMNS, width: COLUMN_INITIAL_WIDTH },
   { length: GRID_INITIAL_ROWS, height: ROW_INITIAL_HEIGHT },
-  [
-    ["🔢 Entries", "👀 Results", ""],
-    ["3", "=A2*3", ""],
-    ["1234", "=(A2*A3+A4)/2", ""],
-    ["-8", "=B3%2", ""],
-    ["", "", ""],
-  ]
+  createInitialGrid()
 );
 
 export default function Page() {

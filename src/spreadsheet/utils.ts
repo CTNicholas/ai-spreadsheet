@@ -99,3 +99,95 @@ export function createInitialStorage<X extends number, Y extends number>(
     }),
   };
 }
+
+/**
+ * Converts spreadsheet data (rows, cells, columns) into a key-value array format
+ * @param columns Array of column objects
+ * @param rows Array of row objects
+ * @param cells Record of cell values keyed by cellId
+ * @returns Array of objects with cell, id, and other properties
+ */
+export function convertSpreadsheetToKeyValueArray(
+  columns: Array<{ id: string; width: number }>,
+  rows: Array<{ id: string; height: number }>,
+  cells: Record<string, string>
+): Array<{
+  cell: string;
+  id: string;
+  columnId: string;
+  rowId: string;
+  value: string;
+  columnIndex: number;
+  rowIndex: number;
+  width: number;
+  height: number;
+}> {
+  const result: Array<{
+    cell: string;
+    id: string;
+    columnId: string;
+    rowId: string;
+    value: string;
+    columnIndex: number;
+    rowIndex: number;
+    width: number;
+    height: number;
+  }> = [];
+
+  // Create a map for quick column/row lookups
+  const columnMap = new Map(
+    columns.map((col, index) => [col.id, { ...col, index }])
+  );
+  const rowMap = new Map(rows.map((row, index) => [row.id, { ...row, index }]));
+
+  // Iterate through all cells
+  for (const [cellId, value] of Object.entries(cells)) {
+    const [columnId, rowId] = extractCellId(cellId);
+
+    const column = columnMap.get(columnId);
+    const row = rowMap.get(rowId);
+
+    if (column && row) {
+      // Convert cellId to Excel-style notation (A1, B2, etc.)
+      const cellNotation = convertCellIdToNotation(column.index, row.index);
+
+      result.push({
+        cell: cellNotation,
+        id: cellId,
+        columnId,
+        rowId,
+        value,
+        columnIndex: column.index,
+        rowIndex: row.index,
+        width: column.width,
+        height: row.height,
+      });
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Converts column and row indices to Excel-style cell notation (A1, B2, etc.)
+ */
+function convertCellIdToNotation(
+  columnIndex: number,
+  rowIndex: number
+): string {
+  const columnLetter = convertNumberToLetter(columnIndex);
+  const rowNumber = rowIndex + 1;
+  return `${columnLetter}${rowNumber}`;
+}
+
+/**
+ * Converts a number to Excel column letter (0=A, 1=B, 25=Z, 26=AA, etc.)
+ */
+function convertNumberToLetter(num: number): string {
+  let result = "";
+  while (num >= 0) {
+    result = String.fromCharCode(65 + (num % 26)) + result;
+    num = Math.floor(num / 26) - 1;
+  }
+  return result;
+}
