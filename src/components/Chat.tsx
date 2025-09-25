@@ -1,12 +1,16 @@
 import { RegisterAiKnowledge, RegisterAiTool } from "@liveblocks/react";
-import { AiChat } from "@liveblocks/react-ui";
+import { AiChat, AiTool } from "@liveblocks/react-ui";
 import { useSpreadsheet } from "../spreadsheet/react";
 import { convertSpreadsheetToKeyValueArray } from "../spreadsheet/utils";
 import { defineAiTool, JsonObject } from "@liveblocks/client";
 import { AiToolInvocationProps } from "@liveblocks/core";
 import { useRef } from "react";
+import { useExampleRoomId } from "../pages";
 
 export function Chat() {
+  const roomId = useExampleRoomId(
+    "liveblocks:examples:nextjs-spreadsheet-advanced"
+  );
   const spreadsheet = useSpreadsheet();
 
   if (!spreadsheet) return null;
@@ -31,13 +35,15 @@ export function Chat() {
   return (
     <>
       <AiChat
-        chatId="main"
+        chatId={roomId}
         copilotId={process.env.NEXT_PUBLIC_LIVEBLOCKS_COPILOT_ID}
       />
 
       <RegisterAiTool
         name="edit-cells"
         tool={defineAiTool()({
+          description:
+            "Edit multiple cells in the spreadsheet. Use an empty string to clear a cell.",
           parameters: {
             type: "object",
             properties: {
@@ -109,15 +115,9 @@ function RenderEditCellsTool({
   },
   JsonObject
 >) {
-  const lastEditedCell = useRef<{
-    rowId: string;
-    columnId: string;
-    value: string;
-  }>();
-
   const spreadsheet = useSpreadsheet();
   if (!spreadsheet) return null;
-  const { setCellValue } = spreadsheet;
+  const { setCellValue, selectCell } = spreadsheet;
 
   if (stage === "receiving") {
     if (
@@ -137,25 +137,25 @@ function RenderEditCellsTool({
       | undefined;
 
     if (current) {
-      setTimeout(() =>
-        setCellValue(current.columnId, current.rowId, current.value)
-      );
+      setTimeout(() => {
+        setCellValue(current.columnId, current.rowId, current.value);
+      });
     }
 
-    return <div>Edit Cells Tool</div>;
+    return <AiTool title="Editing cells…" variant="minimal" />;
   }
 
   if (stage === "executing") {
-    // args.cells.forEach(
-    //   (cell: { rowId: string; columnId: string; value: string }) => {
-    //     setTimeout(() => setCellValue(cell.columnId, cell.rowId, cell.value));
-    //     console.log("setting", cell);
-    //   }
-    // );
+    args.cells.forEach(
+      (cell: { rowId: string; columnId: string; value: string }) => {
+        setTimeout(() => setCellValue(cell.columnId, cell.rowId, cell.value));
+        console.log("setting", cell);
+      }
+    );
     // console.log("setCellValue");
     respond({ data: {}, description: "Cells edited" });
-    return;
+    return <AiTool title="Editing cells…" variant="minimal" />;
   }
 
-  return <div>Edit Cells Tool</div>;
+  return <AiTool title="Cells edited" variant="minimal" />;
 }
