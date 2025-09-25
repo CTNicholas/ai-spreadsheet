@@ -4,8 +4,9 @@ import { useSpreadsheet } from "../spreadsheet/react";
 import { convertSpreadsheetToKeyValueArray } from "../spreadsheet/utils";
 import { defineAiTool, JsonObject } from "@liveblocks/client";
 import { AiToolInvocationProps } from "@liveblocks/core";
-import { useRef } from "react";
 import { useExampleRoomId } from "../pages";
+
+/* Zoom to 1.25 */
 
 export function Chat() {
   const roomId = useExampleRoomId(

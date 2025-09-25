@@ -9,7 +9,7 @@
 .chat {
   border-radius: calc(var(--radius) + var(--padding));
   overflow: hidden;
-  width: 360px;
+  width: 380px;
   position: relative;
   border: 1px solid var(--gray-200);
 }

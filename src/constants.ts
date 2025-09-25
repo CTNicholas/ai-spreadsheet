@@ -1,5 +1,5 @@
-export const GRID_INITIAL_ROWS = 18 as const;
-export const GRID_INITIAL_COLUMNS = 6 as const;
+export const GRID_INITIAL_ROWS = 14 as const;
+export const GRID_INITIAL_COLUMNS = 4 as const;
 export const GRID_MAX_ROWS = 12;
 export const GRID_MAX_COLUMNS = 8;
 export const COLUMN_HEADER_WIDTH = 80;
