@@ -2,7 +2,9 @@ https://github.com/user-attachments/assets/0de726a8-b0b5-4348-9e3a-de5309040587
 
 ## AI Spreadsheet
 
-This demo shows you how to implement an AI spreadsheet editor in Next.js with [Liveblocks](https://liveblocks.io/). It's based on the [collaborative spreadsheet](https://liveblocks.io/examples/collaborative-spreadsheet-advanced) example.
+This demo shows you how to implement an AI spreadsheet editor in Next.js with [Liveblocks](https://liveblocks.io/). 
+It's based on the [collaborative spreadsheet](https://liveblocks.io/examples/collaborative-spreadsheet-advanced) example.
+The AI spreadsheet editing tool is in [`Chat.tsx`](https://github.com/CTNicholas/ai-spreadsheet/blob/main/src/components/Chat.tsx).
 
 ### Set up Liveblocks
 
